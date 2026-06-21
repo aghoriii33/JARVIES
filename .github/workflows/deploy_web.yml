@@ -28,7 +28,7 @@ jobs:
         run: flutter pub get
 
       - name: Create Web Platform Folders
-        run: flutter create --platforms web .
+        run: flutter create --project-name ai_wave --platforms web .
 
       - name: Build Web
         # The base-href MUST match your repository name (case-sensitive) with surrounding slashes
