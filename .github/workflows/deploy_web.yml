@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Create Web Platform Folders
+        run: flutter create --platforms web .
+
       - name: Build Web
         # The base-href MUST match your repository name (case-sensitive) with surrounding slashes
         run: flutter build web --release --base-href /JARVIES/
