@@ -114,8 +114,8 @@ class _TrainAiDialogState extends State<TrainAiDialog> {
                 ),
                 const SizedBox(width: 16),
                 GradientButton(
-                  text: 'Save Persona',
-                  onPressed: _save,
+                  label: 'Save Persona',
+                  onTap: _save,
                   width: 140,
                   height: 44,
                 ),

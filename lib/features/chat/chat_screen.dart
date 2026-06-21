@@ -101,8 +101,10 @@ class _ChatScreenState extends State<ChatScreen> {
             onPressed: () {},
           ),
         ],
-        border: Border(
-          bottom: BorderSide(color: AppColors.border),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(color: AppColors.border, height: 1),
         ),
       ),
       body: SafeArea(
