@@ -93,8 +93,18 @@ class _TrainAiDialogState extends State<TrainAiDialog> {
             ),
             const SizedBox(height: 32),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                TextButton(
+                  onPressed: () {
+                    _controller.clear();
+                    _save();
+                  },
+                  child: const Text(
+                    'Clear',
+                    style: TextStyle(color: AppColors.pink),
+                  ),
+                ),
+                const Spacer(),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: const Text(
