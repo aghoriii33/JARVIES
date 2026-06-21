@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../core/services/ai_service.dart';
+import '../../core/services/settings_service.dart';
 
 class ChatProvider extends ChangeNotifier {
   final List<ChatMessage> _messages = [
@@ -11,9 +12,26 @@ class ChatProvider extends ChangeNotifier {
   ];
 
   bool _isTyping = false;
+  String? _systemInstruction;
 
   List<ChatMessage> get messages => _messages;
   bool get isTyping => _isTyping;
+  String? get systemInstruction => _systemInstruction;
+
+  ChatProvider() {
+    _loadSystemInstruction();
+  }
+
+  Future<void> _loadSystemInstruction() async {
+    _systemInstruction = await SettingsService.instance.getSystemInstruction();
+    notifyListeners();
+  }
+
+  Future<void> updateSystemInstruction(String instruction) async {
+    _systemInstruction = instruction.trim().isEmpty ? null : instruction.trim();
+    await SettingsService.instance.saveSystemInstruction(instruction);
+    notifyListeners();
+  }
 
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
@@ -31,7 +49,11 @@ class ChatProvider extends ChangeNotifier {
     try {
       // Pass copy of messages history (excluding the newly added userMessage)
       final history = List<ChatMessage>.from(_messages)..removeLast();
-      final reply = await AiService.instance.sendMessage(history, text);
+      final reply = await AiService.instance.sendMessage(
+        history,
+        text,
+        systemInstruction: _systemInstruction,
+      );
 
       _messages.add(ChatMessage(
         role: 'model',

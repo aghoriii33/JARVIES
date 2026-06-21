@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_card.dart';
+import 'widgets/train_ai_dialog.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -112,13 +113,23 @@ class ProfileScreen extends StatelessWidget {
                     color: AppColors.orange),
               ]),
               const SizedBox(height: 16),
-              const _SettingsSection(title: 'Preferences', items: [
+              _SettingsSection(title: 'Preferences', items: [
                 _SettingsTile(
+                    icon: Icons.psychology_rounded,
+                    title: 'Train AI Persona',
+                    color: AppColors.cyan,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => const TrainAiDialog(),
+                      );
+                    }),
+                const _SettingsTile(
                     icon: Icons.dark_mode_outlined,
                     title: 'Appearance',
                     color: AppColors.purple,
                     trailing: 'Dark'),
-                _SettingsTile(
+                const _SettingsTile(
                     icon: Icons.language_rounded,
                     title: 'Language',
                     color: AppColors.green,
@@ -220,6 +231,7 @@ class _SettingsTile extends StatelessWidget {
   final Color color;
   final String? trailing;
   final bool isDestructive;
+  final VoidCallback? onTap;
 
   const _SettingsTile({
     required this.icon,
@@ -227,17 +239,22 @@ class _SettingsTile extends StatelessWidget {
     required this.color,
     this.trailing,
     this.isDestructive = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        border:
-            Border(bottom: BorderSide(color: Colors.white.withOpacity(0.04))),
-      ),
-      child: Row(children: [
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            border:
+                Border(bottom: BorderSide(color: Colors.white.withOpacity(0.04))),
+          ),
+          child: Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -264,6 +281,8 @@ class _SettingsTile extends StatelessWidget {
                 ? AppColors.pink.withOpacity(0.5)
                 : AppColors.textDisabled),
       ]),
+        ),
+      ),
     );
   }
 }

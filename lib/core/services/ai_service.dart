@@ -37,7 +37,7 @@ class AiService {
       _apiKey.isNotEmpty && _apiKey != 'your_gemini_api_key_here';
 
   // ── Text chat via gemini-1.5-flash ───────────────────────
-  Future<String> sendMessage(List<ChatMessage> history, String userText) async {
+  Future<String> sendMessage(List<ChatMessage> history, String userText, {String? systemInstruction}) async {
     if (!isConfigured) {
       await Future.delayed(const Duration(milliseconds: 1200));
       return _mockResponse(userText);
@@ -54,10 +54,20 @@ class AiService {
       }
     ];
 
+    final bodyPayload = <String, dynamic>{
+      'contents': contents,
+    };
+
+    if (systemInstruction != null && systemInstruction.trim().isNotEmpty) {
+      bodyPayload['systemInstruction'] = {
+        'parts': [{'text': systemInstruction.trim()}]
+      };
+    }
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'contents': contents}),
+      body: jsonEncode(bodyPayload),
     );
 
     if (response.statusCode == 200) {
@@ -70,7 +80,7 @@ class AiService {
   }
 
   // ── Image analysis via gemini-1.5-flash vision ───────────
-  Future<String> analyzeImage(Uint8List imageBytes) async {
+  Future<String> analyzeImage(Uint8List imageBytes, {String? systemInstruction}) async {
     if (!isConfigured) {
       await Future.delayed(const Duration(milliseconds: 1500));
       return 'Abstract digital composition — geometric shapes with vibrant gradient overlays. The design features Bauhaus-inspired symmetry with generative art elements. Estimated style: Contemporary digital abstract, circa 2020s.';
@@ -81,24 +91,32 @@ class AiService {
 
     final base64Image = base64Encode(imageBytes);
 
+    final bodyPayload = <String, dynamic>{
+      'contents': [
+        {
+          'parts': [
+            {'text': 'Analyze this image in detail. Describe the style, content, mood, colors, and any notable elements.'},
+            {
+              'inlineData': {
+                'mimeType': 'image/jpeg',
+                'data': base64Image,
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    if (systemInstruction != null && systemInstruction.trim().isNotEmpty) {
+      bodyPayload['systemInstruction'] = {
+        'parts': [{'text': systemInstruction.trim()}]
+      };
+    }
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [
-          {
-            'parts': [
-              {'text': 'Analyze this image in detail. Describe the style, content, mood, colors, and any notable elements.'},
-              {
-                'inlineData': {
-                  'mimeType': 'image/jpeg',
-                  'data': base64Image,
-                }
-              }
-            ]
-          }
-        ]
-      }),
+      body: jsonEncode(bodyPayload),
     );
 
     if (response.statusCode == 200) {
